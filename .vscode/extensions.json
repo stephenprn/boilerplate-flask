@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "nidu.copy-json-path",
+        "steoates.autoimport",
+        "wmaurer.change-case",
+        "ms-azuretools.vscode-docker",
+        "IronGeek.vscode-env",
+        "ms-python.isort",
+        "ms-python.vscode-pylance",
+        "ms-python.python"
+    ]
+}

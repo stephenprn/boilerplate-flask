@@ -1,0 +1,16 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#05360C",
+        "titleBar.activeBackground": "#074B11",
+        "titleBar.activeForeground": "#F2FEF4"
+    },
+    "search.exclude": {
+        "**/venv": true
+    },
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.pytestParameters": true,
+    "python.formatting.provider": "black"
+}
