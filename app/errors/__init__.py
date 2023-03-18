@@ -1,14 +1,19 @@
+from typing import Dict, Optional
+
+
 class BusinessError(Exception):
     code: int
     _message: str
+    detail: Optional[Dict]
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
         if not args:
             raise ValueError("You must specify a message for this exception")
 
         self._message = args[0]
+        self.detail = kwargs.get("detail")
 
     @property
     def message(self):

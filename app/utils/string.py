@@ -3,6 +3,11 @@ from typing import Optional
 from app.errors import BadRequestError
 
 
+def camel_case(name: str):
+    parts = iter(name.split("_"))
+    return next(parts) + "".join(i.title() for i in parts)
+
+
 def check_length(
     text: str,
     name: str,

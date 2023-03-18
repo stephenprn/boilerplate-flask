@@ -3,12 +3,10 @@ from enum import Enum
 from json import JSONEncoder
 from typing import Dict, List, Union
 
+from app.utils.string import camel_case
+
 
 def snake_to_camel_case(input_object: Union[Dict, List]) -> Union[Dict, List]:
-    def camel_case(name: str):
-        parts = iter(name.split("_"))
-        return next(parts) + "".join(i.title() for i in parts)
-
     if isinstance(input_object, list):
         camel_list = []
 

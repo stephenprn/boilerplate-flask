@@ -19,9 +19,9 @@ pre-commit install
 
 ## TODO
 
-[ ] marshmallow to validate params
 [ ] insomnia requests file
 [ ] VSCode extension file
 [ ] generate auto-doc
 [ ] alembic
 [ ] tests
+[ ] makefile: fix env

@@ -75,8 +75,12 @@ def register_errorhandlers(app: Flask):
 
     def render_error_business(err):
         error_code = getattr(err, "code")
+        error_response = {error_message_key: err.message}
 
-        return jsonify({error_message_key: err.message}), error_code
+        if err.detail:
+            error_response["detail"] = err.detail
+
+        return jsonify(error_response), error_code
 
     def render_error_default(err):
         error_response: Dict[str, Union[str, List[str]]] = {error_message_key: "Internal server error"}

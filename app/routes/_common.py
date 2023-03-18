@@ -1,12 +1,16 @@
 from functools import wraps
-from typing import Callable, Dict, List, Union
+from typing import Any, Callable, Dict, List, Type, Union
 
 from flask import request
+from marshmallow import Schema, ValidationError
 
 from app.enums.user import UserRole
 from app.errors import BadRequestError, ForbiddenError
+from app.routes.validators.pagination import PaginationParamsSchema
 from app.services import auth as service_auth
 from app.utils.mixin import SerializableMixin
+
+pagination_params_schema = PaginationParamsSchema()
 
 # routes annotations
 
@@ -15,21 +19,11 @@ def paginated(nbr_results_max=100) -> Callable:
     def decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
-            try:
-                page_nbr = int(request.args.get("page_nbr"))
-            except (ValueError, TypeError):
-                raise BadRequestError("Page number is required: page_nbr")
+            pagination_params: Any = pagination_params_schema.load(request.args)
 
-            try:
-                nbr_results = max(int(request.args.get("nbr_results")), 0)
-                nbr_results = min(int(request.args.get("nbr_results")), nbr_results_max)
-            except (ValueError, TypeError):
-                nbr_results = nbr_results_max
+            kwargs_paginated = {**kwargs, **pagination_params}
 
-            kwargs["nbr_results"] = nbr_results
-            kwargs["page_nbr"] = page_nbr
-
-            return function(*args, **kwargs)
+            return function(*args, **kwargs_paginated)
 
         wrapper.__name__ = function.__name__
         return wrapper
@@ -66,6 +60,28 @@ def to_dict() -> Callable:
                 output_dict = dict(output)
 
             return output_dict
+
+        wrapper.__name__ = function.__name__
+        return wrapper
+
+    return decorator
+
+
+def body_validation(validator: Type[Schema], **kwargs_validator):
+    def decorator(function: Callable):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            if request.json is None:
+                raise BadRequestError("Body not found")
+
+            schema = validator(**kwargs_validator)
+
+            try:
+                body = schema.load(request.json)
+            except ValidationError as err:
+                raise BadRequestError("Missing or incorrect body values", detail={"body": err.normalized_messages()})
+
+            return function(*args, **kwargs, body=body)
 
         wrapper.__name__ = function.__name__
         return wrapper
