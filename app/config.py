@@ -34,4 +34,13 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = strtobool(environ.get("SQLALCHEMY_ECHO", "false"))
 
 
-CONFIGS = [DevelopmentConfig, ProductionConfig]
+class TestConfig(Config):
+    ENVIRONMENT = Environment.test
+    TESTING = True
+
+
+ENV_CONFIG_MAPPING = {
+    Environment.development: DevelopmentConfig,
+    Environment.production: ProductionConfig,
+    Environment.test: TestConfig,
+}

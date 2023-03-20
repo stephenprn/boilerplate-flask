@@ -22,6 +22,8 @@ class User(ModelBase):
         password: str,
         role: UserRole = UserRole.USER,
     ):
+        super().__init__()
+
         self.username = username
         self.email = email
         self.role = role

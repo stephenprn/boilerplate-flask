@@ -13,7 +13,7 @@ application_user = Blueprint("application_user", __name__)
 @jwt_required()
 @has_role([UserRole.ADMIN])
 @to_dict()
-@paginated(nbr_results_max=20)
+@paginated(nbr_results_max=10)
 def list_(nbr_results: int, page_nbr: int):
     return service_user.list_(nbr_results=nbr_results, page_nbr=page_nbr)
 

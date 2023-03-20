@@ -2,9 +2,34 @@
 
 ## Development set-up
 
-1. Create virtual environment, source it and install dev dependencies
+1. Create `.env` file based on `.env.template` and source it:
 ```
-make init_dev
+source .env
+```
+
+2. Create virtual environment, source it and install dev dependencies
+```
+python3 -m venv venv
+source venv/bin/activate
+python3 -m pip install -r dev_requirements.txt
+```
+
+3. Start docker db and start local server
+```
+make start_dev
+```
+
+4. Install pre-commit hooks
+```
+pre-commit install
+```
+
+## Development run local server
+
+1. Source `.env` and Python virtual env:
+```
+source .env
+source venv/bin/activate
 ```
 
 2. Start docker db and start local server
@@ -12,16 +37,8 @@ make init_dev
 make start_dev
 ```
 
-3. Install pre-commit hooks
-```
-pre-commit install
-```
-
 ## TODO
 
-[ ] insomnia requests file
-[ ] VSCode extension file
 [ ] generate auto-doc
 [ ] alembic
 [ ] tests
-[ ] makefile: fix env

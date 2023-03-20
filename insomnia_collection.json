@@ -1,0 +1,134 @@
+{
+    "_type": "export",
+    "__export_format": 4,
+    "__export_date": "2023-03-18T13:09:37.646Z",
+    "__export_source": "insomnia.desktop.app:v2022.7.5",
+    "resources": [
+        {
+            "_id": "req_b9af9321295d4b9ab1340872042d5fcc",
+            "parentId": "wrk_6ccd0f8faeb94c0ca74790c5d321231b",
+            "modified": 1679144538669,
+            "created": 1678900984502,
+            "url": "http://localhost:5000/auth/login",
+            "name": "Auth: login",
+            "description": "",
+            "method": "POST",
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"email\": \"{{ _.ADMIN_EMAIL }}\",\n\t\"password\": \"{{ _.ADMIN_PASSWORD }}\"\n}"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1678900984502,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "wrk_6ccd0f8faeb94c0ca74790c5d321231b",
+            "parentId": null,
+            "modified": 1678748228306,
+            "created": 1678748228306,
+            "name": "Boilerplate$",
+            "description": "",
+            "scope": "collection",
+            "_type": "workspace"
+        },
+        {
+            "_id": "req_dbe5f89a270544cabf4507f988ef1f51",
+            "parentId": "wrk_6ccd0f8faeb94c0ca74790c5d321231b",
+            "modified": 1679144945832,
+            "created": 1678748231913,
+            "url": "http://localhost:5000/user",
+            "name": "User: list",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [
+                {
+                    "id": "pair_df32b489e34c4a7dba7243ce3dcec2e9",
+                    "name": "pageNbr",
+                    "value": "0",
+                    "description": ""
+                },
+                {
+                    "id": "pair_bd4ae012fb51488595457174451a45f2",
+                    "name": "nbrResults",
+                    "value": "15",
+                    "description": ""
+                }
+            ],
+            "headers": [
+                {
+                    "id": "pair_b64135f3337e4f43b37b0faf9e6f3eec",
+                    "name": "Authorization",
+                    "value": "Bearer {{ _.JWT_TOKEN }}",
+                    "description": ""
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1678748231913,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "env_b1d3e15940b0aa67de005d8d19bc59080dee73d5",
+            "parentId": "wrk_6ccd0f8faeb94c0ca74790c5d321231b",
+            "modified": 1679141645691,
+            "created": 1678748228311,
+            "name": "Base Environment",
+            "data": {
+                "ADMIN_EMAIL": "st3ph31@gmail.com",
+                "ADMIN_PASSWORD": "password",
+                "JWT_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY3OTE0MTYzOCwianRpIjoiMzQyMmJjYWEtZmFjNy00ZWU3LWJiZmUtYzEzYjU3MmNhNGM2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VybmFtZSI6ImFkbWluIiwidXVpZCI6IjY0ZDhjY2ZmLTEzYTktNDE3OC1iN2UxLTA2ZmFlZmU5OThhNiJ9LCJuYmYiOjE2NzkxNDE2MzgsImV4cCI6MTY3OTE0MzQzOH0.8z1x_x1oAN45t4MS1zWlyrPmfZZM1TuEpQ8VSegm8Cc"
+            },
+            "dataPropertyOrder": {
+                "&": [
+                    "ADMIN_EMAIL",
+                    "ADMIN_PASSWORD",
+                    "JWT_TOKEN"
+                ]
+            },
+            "color": null,
+            "isPrivate": false,
+            "metaSortKey": 1678748228311,
+            "_type": "environment"
+        },
+        {
+            "_id": "jar_b1d3e15940b0aa67de005d8d19bc59080dee73d5",
+            "parentId": "wrk_6ccd0f8faeb94c0ca74790c5d321231b",
+            "modified": 1678748228312,
+            "created": 1678748228312,
+            "name": "Default Jar",
+            "cookies": [],
+            "_type": "cookie_jar"
+        },
+        {
+            "_id": "spc_5a595524bfce413e992f0325cc1064fe",
+            "parentId": "wrk_6ccd0f8faeb94c0ca74790c5d321231b",
+            "modified": 1678748228307,
+            "created": 1678748228307,
+            "fileName": "Boilerplate$",
+            "contents": "",
+            "contentType": "yaml",
+            "_type": "api_spec"
+        }
+    ]
+}

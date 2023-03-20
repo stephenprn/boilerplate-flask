@@ -10,8 +10,6 @@ from app.routes.validators.pagination import PaginationParamsSchema
 from app.services import auth as service_auth
 from app.utils.mixin import SerializableMixin
 
-pagination_params_schema = PaginationParamsSchema()
-
 # routes annotations
 
 
@@ -19,7 +17,15 @@ def paginated(nbr_results_max=100) -> Callable:
     def decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
-            pagination_params: Any = pagination_params_schema.load(request.args)
+            pagination_params_schema = PaginationParamsSchema(context={"nbr_results_max": nbr_results_max})
+
+            try:
+                pagination_params: Any = pagination_params_schema.load(request.args)
+            except ValidationError as err:
+                raise BadRequestError(
+                    "Missing or incorrect query params",
+                    detail={"body": err.normalized_messages()},
+                )
 
             kwargs_paginated = {**kwargs, **pagination_params}
 
@@ -79,7 +85,10 @@ def body_validation(validator: Type[Schema], **kwargs_validator):
             try:
                 body = schema.load(request.json)
             except ValidationError as err:
-                raise BadRequestError("Missing or incorrect body values", detail={"body": err.normalized_messages()})
+                raise BadRequestError(
+                    "Missing or incorrect body values",
+                    detail={"body": err.normalized_messages()},
+                )
 
             return function(*args, **kwargs, body=body)
 

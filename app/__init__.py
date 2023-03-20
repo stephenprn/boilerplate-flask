@@ -1,14 +1,14 @@
 import json
 import os
 import traceback
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from flask import Flask, Response, jsonify
 from flask_alembic import Alembic
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
-from app.config import CONFIGS
+from app.config import ENV_CONFIG_MAPPING
 from app.database import db
 from app.enums.environment import Environment
 from app.errors import BUSINESS_ERRORS
@@ -16,10 +16,10 @@ from app.services.auth import init_admin
 from app.utils.json import CustomJSONEncoder, snake_to_camel_case
 
 
-def create_app() -> Flask:
+def create_app(environment: Optional[Environment] = None) -> Flask:
     app = Flask(__name__)
 
-    init_config(app)
+    init_config(app, environment)
     app.json_encoder = CustomJSONEncoder
     db.init_app(app)
 
@@ -41,23 +41,23 @@ def create_app() -> Flask:
     return app
 
 
-def init_config(app: Flask):
-    environment_str = os.environ.get("ENVIRONMENT")
+def init_config(app: Flask, environment: Optional[Environment] = None):
+    if not environment:
+        environment_str = os.environ.get("ENVIRONMENT")
 
-    if not environment_str:
-        raise Exception("ENVIRONMENT env var must be specified")
+        if not environment_str:
+            raise Exception("ENVIRONMENT env var must be specified")
 
-    try:
-        environment = Environment[environment_str]
-    except KeyError:
-        raise Exception(
-            f"""ENVIRONMENT env var can take value: {
-                ",".join([env.name for env in Environment])
-            } | current value: {environment_str}"""
-        )
+        try:
+            environment = Environment[environment_str]
+        except KeyError:
+            raise Exception(
+                f"""ENVIRONMENT env var can take value: {
+                    ",".join([env.name for env in Environment])
+                } | current value: {environment_str}"""
+            )
 
-    environment_config_mapping = {config.ENVIRONMENT: config for config in CONFIGS}
-    config = environment_config_mapping[environment]
+    config = ENV_CONFIG_MAPPING[environment]
 
     app.config.from_object(config)
 
