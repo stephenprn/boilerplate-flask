@@ -1,21 +1,13 @@
 from abc import ABC
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Generic, List, Optional, TypeVar
 
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.expression import func
-from typing_extensions import TypedDict
 
-from app.database import db
 from app.models._common import ModelBase
 from app.repositories._common.filter import FilterInt, FilterText
 from app.repositories._common.order_by import ORDER_BY_CLAUSE_MAPPING, OrderBy
 from app.types.result import ResultWithNbr
-
-
-class ArgsKwargs(TypedDict):
-    args: Optional[Dict[str, Any]]
-    kwargs: Optional[Dict[str, Any]]
-
 
 T = TypeVar("T", bound=ModelBase)
 
@@ -35,28 +27,9 @@ class RepositoryBase(ABC, Generic[T]):
 
         return self._execute(query, *args, **kwargs)
 
-    def list_union(self, args_kwargs: List[ArgsKwargs], *args, **kwargs) -> List[T]:
-        query = self.model.query
-
-        for ak in args_kwargs:
-            query = query.union(
-                self._build_query(
-                    self.model.query,
-                    *(ak.get("args") or {}),
-                    **(ak.get("kwargs") or {}),
-                )
-            )
-
-        query = self._build_query(query, *args, **kwargs)
-
-        return self._execute(query, *args, **kwargs)
-
     def count(self, *args, **kwargs) -> int:
         query = self.model.query
-
-        query = self._filter_query(query, *args, **kwargs)
-        query = self._load_only(query, *args, **kwargs)
-        query = self._sort_query(query, *args, **kwargs)
+        query = self._build_query(query, *args, **kwargs)
 
         return query.count()
 
@@ -70,11 +43,6 @@ class RepositoryBase(ABC, Generic[T]):
         results: List[T] = self.list_(*args, **kwargs, limit=1)
 
         return results[0] if results else None
-
-    def add(self, *args, **kwargs):
-        elt = self.model(*args, **kwargs)
-        db.session.add(elt)
-        db.session.commit()
 
     def _build_query(self, query: Query, *args, **kwargs) -> Query:
         query = self._filter_query(query, *args, **kwargs)

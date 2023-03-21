@@ -22,20 +22,17 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
-    ENVIRONMENT = Environment.development
     DEVELOPMENT = True
     DEBUG = True
     SQLALCHEMY_ECHO = strtobool(environ.get("SQLALCHEMY_ECHO", "true"))
 
 
 class ProductionConfig(Config):
-    ENVIRONMENT = Environment.production
     DEBUG = False
     SQLALCHEMY_ECHO = strtobool(environ.get("SQLALCHEMY_ECHO", "false"))
 
 
 class TestConfig(Config):
-    ENVIRONMENT = Environment.test
     TESTING = True
 
 

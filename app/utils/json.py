@@ -1,9 +1,10 @@
 import datetime
 from enum import Enum
-from json import JSONEncoder
 from typing import Dict, List, Union
 
-from app.utils.string import camel_case
+from flask.json.provider import DefaultJSONProvider, JSONProvider
+
+from app.utils.string import snake_to_camel_case as string_snake_to_camel_case
 
 
 def snake_to_camel_case(input_object: Union[Dict, List]) -> Union[Dict, List]:
@@ -26,7 +27,7 @@ def snake_to_camel_case(input_object: Union[Dict, List]) -> Union[Dict, List]:
         elif isinstance(value, list):
             value = snake_to_camel_case(value)
 
-        camel_dict[camel_case(key)] = value
+        camel_dict[string_snake_to_camel_case(key)] = value
 
     return camel_dict
 
@@ -40,11 +41,11 @@ def default_handler(value) -> str:
     raise TypeError("Unknown type")
 
 
-class CustomJSONEncoder(JSONEncoder):
+class CustomJSONEncoder(JSONProvider):
     def default(self, obj):
         try:
             return default_handler(obj)
         except TypeError:
             pass
 
-        return JSONEncoder.default(self, obj)
+        return DefaultJSONProvider.default(obj)

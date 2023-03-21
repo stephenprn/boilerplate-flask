@@ -7,7 +7,7 @@ class BusinessError(Exception):
     detail: Optional[Dict]
 
     def __init__(self, *args, **kwargs):
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
         if not args:
             raise ValueError("You must specify a message for this exception")

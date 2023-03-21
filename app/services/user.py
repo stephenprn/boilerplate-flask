@@ -7,11 +7,10 @@ from app.repositories.user import UserRepository
 repo_user = UserRepository()
 
 
-def list_(nbr_results: int, page_nbr: int, hidden: Optional[bool] = None) -> List[User]:
+def list_(nbr_results: int, page_nbr: int) -> List[User]:
     return repo_user.list_(
         nbr_results=nbr_results,
         page_nbr=page_nbr,
-        filter_hidden=hidden,
         order_creation_date=OrderBy.DESC,
         with_nbr_results=True,
     )

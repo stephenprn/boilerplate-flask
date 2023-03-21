@@ -20,7 +20,7 @@ def create_app(environment: Optional[Environment] = None) -> Flask:
     app = Flask(__name__)
 
     init_config(app, environment)
-    app.json_encoder = CustomJSONEncoder
+    app.json_provider_class = CustomJSONEncoder
     db.init_app(app)
 
     with app.app_context():
