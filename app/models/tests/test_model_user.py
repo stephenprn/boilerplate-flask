@@ -2,7 +2,7 @@ from app.enums.user import UserRole
 from app.models.user import User
 
 
-class TestModelsUser:
+class TestModelUser:
     def test_user(self, test_user, db_session):
         users = User.query.filter(User.username == test_user.username).all()
 

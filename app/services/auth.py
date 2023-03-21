@@ -1,10 +1,9 @@
-import os
 from typing import Dict, TypedDict
 
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity
 
 from app.database import db
-from app.errors import BadRequestError, ConflictError, UnauthorizedError
+from app.errors import ConflictError, UnauthorizedError
 from app.models.user import User
 from app.repositories.user import UserRepository
 from app.utils.hash import check_password
@@ -75,19 +74,3 @@ def get_current_identity() -> User:
         raise UnauthorizedError("Invalid token")
 
     return user
-
-
-# init methods
-
-
-def init_admin():
-    admin_email = os.environ.get("ADMIN_EMAIL")
-    admin_password = os.environ.get("ADMIN_PASSWORD")
-
-    if not admin_password or not admin_email:
-        raise BadRequestError("ADMIN_PASSWORD and ADMIN_EMAIL must be set as env var when no admin is set in db")
-
-    if repo_user.exists(filter_email_in=[admin_email]):
-        return
-
-    register(email=admin_email, username="admin", password=admin_password)

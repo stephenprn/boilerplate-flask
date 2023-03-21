@@ -11,6 +11,33 @@ This project also includes:
 - Postgres SQL database set-up with `docker`
 - Pre-commit hooks including `autoflake`, `isort` and `black` stages
 
+It follows this pattern:
+```
+    +------------------+
+    |      CLIENT      |
+    +------------------+
+              |         
+              V
+    +-----------------+
+    |      ROUTE      |
+    +-----------------+
+              |         
+              V
+    +-----------------+
+    |     SERVICE     |
+    +-----------------+
+              |         
+              V
+    +------------------+
+    |    PERMISSION    |
+    +------------------+
+              |         
+              V
+    +------------------+
+    |    REPOSITORY    |
+    +------------------+
+```
+
 ## Development set-up
 
 1. Create `.env` file based on `.env.template` and source it:
@@ -35,6 +62,11 @@ make start_dev
 pre-commit install
 ```
 
+5. Init admin user
+```
+flask user init_admin
+```
+
 ## Development run local server (once set-up is done)
 
 1. Source `.env` and Python virtual env:
@@ -48,10 +80,22 @@ source venv/bin/activate
 make start_dev
 ```
 
+## Migrations
+
+`Flask-Migrate` (based on `alembic`) is used to manage db migrations. After a model has been updated, run this command to generate migration file (located in `migrations/versions`):
+```
+flask db migrate -m "migration description"                                                                                                        
+```
+Then, it may be necessary to adjust migration code by hand.
+
+Run this command to apply migration to db (this needs to be done before any deployment):
+```
+flask db upgrade
+```
+
 ## TODO
 
 [ ] generate auto-doc
-[ ] alembic
-[ ] tests
+[ ] tests routes
 [ ] permission layer
-[ ] rename packages without "s"
+[ ] logger

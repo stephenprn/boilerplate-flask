@@ -4,15 +4,14 @@ import traceback
 from typing import Dict, List, Optional, Union
 
 from flask import Flask, Response, jsonify
-from flask_alembic import Alembic
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 
 from app.config import ENV_CONFIG_MAPPING
 from app.database import db
 from app.enums.environment import Environment
 from app.errors import BUSINESS_ERRORS
-from app.services.auth import init_admin
 from app.utils.json import CustomJSONEncoder, snake_to_camel_case
 
 
@@ -27,16 +26,15 @@ def create_app(environment: Optional[Environment] = None) -> Flask:
         register_blueprints(app)
         register_errorhandlers(app)
         register_request_hooks(app)
+        register_commands(app)
 
         db.create_all()  # Create sql tables for our data models
-
-        init_admin()
 
         CORS(app)
         JWTManager(app)
 
-        alembic = Alembic()
-        alembic.init_app(app)
+        migrate = Migrate(app, db)
+        migrate.init_app(app)
 
     return app
 
@@ -105,3 +103,9 @@ def register_request_hooks(app: Flask):
             response.set_data(json.dumps(snake_to_camel_case(response.get_json())))
 
         return response
+
+
+def register_commands(app: Flask):
+    from app.commands.user import user_cli
+
+    app.cli.add_command(user_cli)

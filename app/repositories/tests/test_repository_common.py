@@ -5,7 +5,7 @@ from app.repositories._common.order_by import OrderBy
 from app.types.result import ResultWithNbr
 
 
-class TestRepositoriesCommon:
+class TestRepositoryCommon:
     def test_repository_base(self, ModelBaseTest, db_session):
         model_base_test_one = ModelBaseTest(test_property_str="one", test_property_int=1)
         model_base_test_one.creation_date = datetime(2011, 1, 1)

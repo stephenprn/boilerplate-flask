@@ -1,7 +1,7 @@
 from unittest import mock
 
 
-class TestModelsCommon:
+class TestModelCommon:
     @mock.patch("app.models._common.uuid4", return_value="test-uuid")
     def test_model_base(self, mock_uuid, ModelBaseTest, db_session):
         model_base_test = ModelBaseTest(test_property_str="test string", test_property_int=12)

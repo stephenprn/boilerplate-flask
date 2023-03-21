@@ -1,14 +1,13 @@
-import os
 from unittest import mock
 
 import pytest
 
 import app.services.auth as service_auth
-from app.errors import BadRequestError, ConflictError, UnauthorizedError
+from app.errors import ConflictError, UnauthorizedError
 from app.models.user import User
 
 
-class TestServicesAuth:
+class TestServiceAuth:
     @mock.patch("app.models._common.uuid4", return_value="test-uuid")
     @mock.patch(
         "app.models.user.hash_password",
@@ -90,26 +89,3 @@ class TestServicesAuth:
         db_session.flush()
 
         assert service_auth.get_current_identity() == user
-
-    @mock.patch("app.services.auth.register", autospec=True)
-    def test_init_admin(self, mock_register, db_session):
-        # ADMIN_PASSWORD and ADMIN_EMAIL not set
-
-        with mock.patch.dict("os.environ"), pytest.raises(
-            BadRequestError,
-            match="ADMIN_PASSWORD and ADMIN_EMAIL must be set as env var when no admin is set in db",
-        ):
-            del os.environ["ADMIN_PASSWORD"]
-            del os.environ["ADMIN_EMAIL"]
-
-            service_auth.init_admin()
-            mock_register.assert_not_called()
-
-        # ADMIN_PASSWORD and ADMIN_EMAIL well set
-
-        with mock.patch.dict(
-            "app.services.auth.os.environ",
-            {"ADMIN_EMAIL": "admin@test.com", "ADMIN_PASSWORD": "admin_password"},
-        ):
-            service_auth.init_admin()
-            mock_register.assert_called_once_with(email="admin@test.com", username="admin", password="admin_password")

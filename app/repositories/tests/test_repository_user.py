@@ -7,7 +7,7 @@ from app.repositories.user import UserRepository
 from app.types.result import ResultWithNbr
 
 
-class TestRepositoriesUserCommon:
+class TestRepositoryUser:
     def test_repository_user(self, db_session):
         user_one = User(
             username="user_one",
