@@ -4,3 +4,4 @@
 *.pyo
 venv/
 .idea/
+.temp/

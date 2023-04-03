@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Type
 
 
 class BusinessError(Exception):
@@ -7,7 +7,7 @@ class BusinessError(Exception):
     detail: Optional[Dict]
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
         if not args:
             raise ValueError("You must specify a message for this exception")
@@ -36,4 +36,4 @@ class ConflictError(BusinessError):
     code = 409
 
 
-BUSINESS_ERRORS = [BadRequestError, UnauthorizedError, ForbiddenError, ConflictError]
+BUSINESS_ERRORS: List[Type[BusinessError]] = [BadRequestError, UnauthorizedError, ForbiddenError, ConflictError]

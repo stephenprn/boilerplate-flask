@@ -1,8 +1,9 @@
 import datetime
 from enum import Enum
+from json import JSONEncoder
 from typing import Dict, List, Union
 
-from flask.json.provider import DefaultJSONProvider, JSONProvider
+from flask.json.provider import DefaultJSONProvider
 
 from app.utils.string import snake_to_camel_case as string_snake_to_camel_case
 
@@ -41,7 +42,7 @@ def default_handler(value) -> str:
     raise TypeError("Unknown type")
 
 
-class CustomJSONEncoder(JSONProvider):
+class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
         try:
             return default_handler(obj)

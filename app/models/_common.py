@@ -33,16 +33,20 @@ class ModelCommon(SerializableMixin, db.Model, metaclass=ModelCommonMeta):
         state = inspect(self)
         exclude_cols_ = exclude_cols if exclude_cols is not None else self.__exclude_cols_serialize__
 
-        col_names_to_load = include_cols if include_cols is not None else [col.name for col in self.__mapper__.columns]
-        col_names_to_load = list(set(col_names_to_load) - set(exclude_cols_))
+        col_property_names_to_load = (
+            include_cols
+            if include_cols is not None
+            else [self.__mapper__._columntoproperty[col].key for col in self.__mapper__.columns]
+        )
+        col_property_names_to_load = list(set(col_property_names_to_load) - set(exclude_cols_))
 
-        res = {col_name: getattr(self, col_name) for col_name in col_names_to_load}
+        res = {col_name: getattr(self, col_name) for col_name in col_property_names_to_load}
 
-        # load of relationship propeties
+        # load of relationship properties
         for rel in state.mapper.relationships:
             key = rel.key
 
-            if key not in state.unloaded:
+            if key not in state.unloaded and key in col_property_names_to_load:
                 value = getattr(self, key)
 
                 if isinstance(value, list):

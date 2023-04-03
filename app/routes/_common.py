@@ -24,7 +24,7 @@ def paginated(nbr_results_max=100) -> Callable:
             except ValidationError as err:
                 raise BadRequestError(
                     "Missing or incorrect query params",
-                    detail={"body": err.normalized_messages()},
+                    detail={"params": err.normalized_messages()},
                 )
 
             kwargs_paginated = {**kwargs, **pagination_params}
@@ -77,7 +77,7 @@ def body_validation(validator: Type[Schema], **kwargs_validator):
     def decorator(function: Callable):
         @wraps(function)
         def wrapper(*args, **kwargs):
-            if request.json is None:
+            if not request.data or not request.json:
                 raise BadRequestError("Body not found")
 
             schema = validator(**kwargs_validator)
@@ -91,6 +91,30 @@ def body_validation(validator: Type[Schema], **kwargs_validator):
                 )
 
             return function(*args, **kwargs, body=body)
+
+        wrapper.__name__ = function.__name__
+        return wrapper
+
+    return decorator
+
+
+def params_validation(validator: Type[Schema], **kwargs_validator) -> Callable:
+    def decorator(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            schema = validator(**kwargs_validator)
+
+            try:
+                query_params: Any = schema.load(request.args)
+            except ValidationError as err:
+                raise BadRequestError(
+                    "Missing or incorrect query params",
+                    detail={"params": err.normalized_messages()},
+                )
+
+            kwargs_updated = {**kwargs, **query_params}
+
+            return function(*args, **kwargs_updated)
 
         wrapper.__name__ = function.__name__
         return wrapper

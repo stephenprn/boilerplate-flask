@@ -7,6 +7,7 @@ from flask import Flask, Response, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
+from werkzeug.exceptions import HTTPException
 
 from app.config import ENV_CONFIG_MAPPING
 from app.database import db
@@ -19,7 +20,7 @@ def create_app(environment: Optional[Environment] = None) -> Flask:
     app = Flask(__name__)
 
     init_config(app, environment)
-    app.json_provider_class = CustomJSONEncoder
+    app.json_encoder = CustomJSONEncoder
     db.init_app(app)
 
     with app.app_context():
@@ -30,7 +31,7 @@ def create_app(environment: Optional[Environment] = None) -> Flask:
 
         db.create_all()  # Create sql tables for our data models
 
-        CORS(app)
+        CORS(app, resources={r"/*": {"origins": "*"}})
         JWTManager(app)
 
         migrate = Migrate(app, db)
@@ -72,15 +73,17 @@ def register_errorhandlers(app: Flask):
     error_message_key = app.config["ERROR_MESSAGE_KEY"]
 
     def render_error_business(err):
-        error_code = getattr(err, "code")
         error_response = {error_message_key: err.message}
 
         if err.detail:
             error_response["detail"] = err.detail
 
-        return jsonify(error_response), error_code
+        return jsonify(error_response), err.code
 
     def render_error_default(err):
+        if isinstance(err, HTTPException):
+            return jsonify({error_message_key: err.description}), err.code or 500
+
         error_response: Dict[str, Union[str, List[str]]] = {error_message_key: "Internal server error"}
 
         # if DEBUG, we specify full stack trace
@@ -92,7 +95,7 @@ def register_errorhandlers(app: Flask):
     for error_type in BUSINESS_ERRORS:
         app.register_error_handler(error_type, render_error_business)
 
-    # default handler
+    # default handler: internal server error and werkzeug exceptions
     app.register_error_handler(Exception, render_error_default)
 
 

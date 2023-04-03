@@ -1,19 +1,17 @@
 from abc import ABC
-from typing import Generic, List, Optional, TypeVar
+from typing import Generic, List, Optional
 
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.expression import func
 
-from app.models._common import ModelBase
 from app.repositories._common.filter import FilterInt, FilterText
 from app.repositories._common.order_by import ORDER_BY_CLAUSE_MAPPING, OrderBy
+from app.types.generic import T_MODEL
 from app.types.result import ResultWithNbr
 
-T = TypeVar("T", bound=ModelBase)
 
-
-class RepositoryBase(ABC, Generic[T]):
-    model: T
+class RepositoryBase(ABC, Generic[T_MODEL]):
+    model: T_MODEL
 
     def list_with_nbr_results(self, *args, **kwargs) -> ResultWithNbr:
         query = self.model.query
@@ -21,7 +19,7 @@ class RepositoryBase(ABC, Generic[T]):
 
         return self._execute_with_nbr_results(query, *args, **kwargs)
 
-    def list_(self, *args, **kwargs) -> List[T]:
+    def list_(self, *args, **kwargs) -> List[T_MODEL]:
         query = self.model.query
         query = self._build_query(query, *args, **kwargs)
 
@@ -36,17 +34,18 @@ class RepositoryBase(ABC, Generic[T]):
     def exists(self, *args, **kwargs) -> bool:
         return self.count(*args, **kwargs) > 0
 
-    def get(self, *args, **kwargs) -> Optional[T]:
+    def get(self, *args, **kwargs) -> Optional[T_MODEL]:
         kwargs.pop("limit", None)  # we force limit to 1
         kwargs.pop("with_nbr_results", None)  # we want a raw list of results
 
-        results: List[T] = self.list_(*args, **kwargs, limit=1)
+        results: List[T_MODEL] = self.list_(*args, **kwargs, limit=1)
 
         return results[0] if results else None
 
     def _build_query(self, query: Query, *args, **kwargs) -> Query:
         query = self._filter_query(query, *args, **kwargs)
         query = self._load_only(query, *args, **kwargs)
+        query = self._eager_load(query, *args, **kwargs)
         query = self._sort_query(query, *args, **kwargs)
 
         return query
@@ -55,6 +54,9 @@ class RepositoryBase(ABC, Generic[T]):
         return self._filter_query_common(query, *args, **kwargs)
 
     def _load_only(self, query, *args, **kwargs) -> Query:
+        return query
+
+    def _eager_load(self, query, *args, **kwargs) -> Query:
         return query
 
     def _sort_query(self, query, *args, **kwargs) -> Query:
@@ -136,7 +138,7 @@ class RepositoryBase(ABC, Generic[T]):
         page_nbr: Optional[int] = None,
         *args,
         **kwargs,
-    ) -> List[T]:
+    ) -> List[T_MODEL]:
         if nbr_results is not None:
             query = query.limit(nbr_results)
 
