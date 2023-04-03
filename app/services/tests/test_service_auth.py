@@ -53,8 +53,8 @@ class TestServiceAuth:
         # authenticate with right credentials
 
         with mock.patch(
-            "app.utils.hash._hash_pw_salt",
-            return_value="test-password-hash",
+            "app.services.auth.check_password",
+            return_value=True,
         ):
             user_auth = service_auth.authenticate(email="test@test.com", password="password")
 
